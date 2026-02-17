@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://player_card"]
+
+[ext_resource type="Script" path="res://src/ui/components/PlayerCard.gd" id="1_playercard"]
+
+[node name="PlayerCard" type="PanelContainer"]
+custom_minimum_size = Vector2(160, 80)
+script = ExtResource("1_playercard")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+text = "Player Name"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+text = ""

@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://hud"]
+
+[ext_resource type="Script" path="res://src/ui/hud/HUD.gd" id="1_hud"]
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.0
+anchor_right = 1.0
+offset_bottom = 40.0
+
+[node name="RoundLabel" type="Label" parent="TopBar"]
+text = "Round 1"
+size_flags_horizontal = 3
+
+[node name="PhaseLabel" type="Label" parent="TopBar"]
+text = "AUCTION"
+size_flags_horizontal = 3
+
+[node name="TurnLabel" type="Label" parent="TopBar"]
+text = "Your turn"
+size_flags_horizontal = 3
+
+[node name="BottomBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -60.0
+
+[node name="PlayerCards" type="HBoxContainer" parent="BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3

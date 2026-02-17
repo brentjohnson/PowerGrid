@@ -1,0 +1,125 @@
+stages:
+  - validate
+  - build
+  - test
+  - package
+  - export
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle-home"
+
+.gradle-cache: &gradle-cache
+  cache:
+    key:
+      files:
+        - server/gradle/wrapper/gradle-wrapper.properties
+        - server/build.gradle.kts
+    paths:
+      - .gradle-home/caches/
+      - .gradle-home/wrapper/
+
+.server-changes: &server-changes
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - server/**/*
+    - if: $CI_COMMIT_TAG
+      changes:
+        - server/**/*
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - server/**/*
+
+.export-rules: &export-rules
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+# ─── Server ───────────────────────────────────────────────────────────────────
+
+server:validate:
+  stage: validate
+  image: gradle:9.3.1-jdk21
+  <<: *gradle-cache
+  <<: *server-changes
+  script:
+    - cd server && ./gradlew validateWrapper
+
+server:build:
+  stage: build
+  image: gradle:9.3.1-jdk21
+  <<: *gradle-cache
+  <<: *server-changes
+  script:
+    - cd server && ./gradlew classes
+
+server:test:
+  stage: test
+  image: gradle:9.3.1-jdk21
+  <<: *gradle-cache
+  <<: *server-changes
+  script:
+    - cd server && ./gradlew test
+  artifacts:
+    when: always
+    reports:
+      junit: server/build/test-results/test/TEST-*.xml
+    paths:
+      - server/build/reports/tests/
+
+server:package:
+  stage: package
+  image: gradle:9.3.1-jdk21
+  <<: *gradle-cache
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+  script:
+    - cd server && ./gradlew shadowJar
+  artifacts:
+    name: "powergrid-server-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - server/build/libs/powergrid-server.jar
+    expire_in: 30 days
+
+# ─── Client ───────────────────────────────────────────────────────────────────
+
+client:export-linux:
+  stage: export
+  image: barichello/godot-ci:4.4
+  <<: *export-rules
+  script:
+    - mkdir -p client/dist/linux
+    - cd client && godot --headless --export-release "Linux/X11" dist/linux/PowerGrid.x86_64
+  artifacts:
+    name: "powergrid-linux-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - client/dist/linux/
+    expire_in: 30 days
+
+client:export-windows:
+  stage: export
+  image: barichello/godot-ci:4.4
+  <<: *export-rules
+  script:
+    - mkdir -p client/dist/windows
+    - cd client && godot --headless --export-release "Windows Desktop" dist/windows/PowerGrid.exe
+  artifacts:
+    name: "powergrid-windows-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - client/dist/windows/
+    expire_in: 30 days
+
+client:export-macos:
+  stage: export
+  image: barichello/godot-ci:4.4
+  <<: *export-rules
+  script:
+    - mkdir -p client/dist/macos
+    - cd client && godot --headless --export-release "macOS" dist/macos/PowerGrid.dmg
+  artifacts:
+    name: "powergrid-macos-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - client/dist/macos/
+    expire_in: 30 days

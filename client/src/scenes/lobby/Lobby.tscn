@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://lobby"]
+
+[ext_resource type="Script" path="res://src/scenes/lobby/Lobby.gd" id="1_lobby"]
+
+[node name="Lobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_lobby")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="LeftPanel" type="VBoxContainer" parent="HSplitContainer"]
+custom_minimum_size = Vector2(400, 0)
+
+[node name="Label" type="Label" parent="HSplitContainer/LeftPanel"]
+text = "Lobby Rooms"
+
+[node name="RoomList" type="ItemList" parent="HSplitContainer/LeftPanel"]
+custom_minimum_size = Vector2(0, 300)
+
+[node name="RoomNameInput" type="LineEdit" parent="HSplitContainer/LeftPanel"]
+placeholder_text = "Room name (optional)"
+
+[node name="CreateButton" type="Button" parent="HSplitContainer/LeftPanel"]
+text = "Create Room"
+
+[node name="JoinButton" type="Button" parent="HSplitContainer/LeftPanel"]
+text = "Join Selected Room"
+
+[node name="RefreshButton" type="Button" parent="HSplitContainer/LeftPanel"]
+text = "Refresh"
+
+[node name="RightPanel" type="VBoxContainer" parent="HSplitContainer"]
+
+[node name="Label" type="Label" parent="HSplitContainer/RightPanel"]
+text = "Players in Room"
+
+[node name="PlayerList" type="ItemList" parent="HSplitContainer/RightPanel"]
+custom_minimum_size = Vector2(0, 300)
+
+[node name="StartButton" type="Button" parent="HSplitContainer/RightPanel"]
+text = "Start Game"
+
+[node name="LeaveButton" type="Button" parent="HSplitContainer/RightPanel"]
+text = "Leave Room"
