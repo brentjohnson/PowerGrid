@@ -73,8 +73,9 @@ When adding a new message type, do **all** of the following in order:
 
 ## CI Notes
 
-- CI runs on GitLab.com shared runners (Docker executor).
-- Server jobs use `gradle:9.3.1-jdk21`; client export jobs use `barichello/godot-ci:4.4`.
+- CI runs on **GitHub Actions** (workflow: `.github/workflows/build.yml`).
+- Server jobs use JDK 21 (Eclipse Temurin); client export jobs use `barichello/godot-ci:4.4` in a container.
 - The Gradle daemon is disabled in CI via `GRADLE_OPTS=-Dorg.gradle.daemon=false`.
-- `GRADLE_USER_HOME` is set to `.gradle-home/` inside the project dir so caches are picked up by GitLab's cache mechanism.
-- Server jobs only run when files under `server/` change (via `changes:` rules).
+- `GRADLE_USER_HOME` is set to `.gradle-home/` inside the workspace so caches work with GitHub’s cache.
+- The workflow runs only when files under `server/`, `client/`, or `.github/` change (path filters on push and pull_request).
+- Server: validate wrapper → build → test; on push to default branch (or tag), package shadow JAR and upload artifact. Client: on push to default branch (or tag), export Linux/Windows/macOS and upload artifacts.
