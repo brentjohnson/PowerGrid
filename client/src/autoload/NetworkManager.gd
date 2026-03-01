@@ -20,8 +20,9 @@ func _process(_delta: float) -> void:
 	var new_state: WebSocketPeer.State = _socket.get_ready_state()
 
 	if new_state != _state:
-		_on_state_changed(_state, new_state)
+		var old_state: WebSocketPeer.State = _state
 		_state = new_state
+		_on_state_changed(old_state, new_state)
 
 	if _state == WebSocketPeer.STATE_OPEN:
 		while _socket.get_available_packet_count() > 0:

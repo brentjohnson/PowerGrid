@@ -7,9 +7,12 @@ import org.apache.pekko.actor.typed.Props;
 import org.apache.pekko.http.javadsl.Http;
 import org.apache.pekko.http.javadsl.ServerBinding;
 import org.apache.pekko.http.javadsl.model.ws.Message;
+import org.apache.pekko.http.javadsl.model.ws.TextMessage;
 import org.apache.pekko.http.javadsl.server.AllDirectives;
 import org.apache.pekko.http.javadsl.server.Route;
+import org.apache.pekko.stream.Materializer;
 import org.apache.pekko.stream.OverflowStrategy;
+import org.apache.pekko.stream.SystemMaterializer;
 import org.apache.pekko.stream.javadsl.Flow;
 import org.apache.pekko.stream.javadsl.Sink;
 import org.apache.pekko.stream.javadsl.Source;
@@ -88,9 +91,12 @@ public class ServerApp extends AllDirectives {
                 );
 
         // Step 3: Inbound sink — WS text messages → actor
+        Materializer mat = SystemMaterializer.get(system).materializer();
         Sink<Message, NotUsed> inSink = Flow.<Message>create()
                 .filter(Message::isText)
-                .flatMapConcat(m -> m.asTextMessage().getStreamedText())
+                .map(m -> m.asTextMessage())
+                .mapAsync(1, (TextMessage tm) -> tm.toStrict(5000, mat))
+                .map(strict -> strict.getStrictText())
                 .to(Sink.foreach(text ->
                         connectionActor.tell(new PlayerConnectionActor.IncomingText(text))
                 ))

@@ -100,7 +100,12 @@ public class PlayerConnectionActor extends AbstractBehavior<PlayerConnectionActo
     }
 
     private Behavior<Command> onSendText(SendText cmd) {
-        outQueue.offer(TextMessage.create(cmd.json()));
+        outQueue.offer(TextMessage.create(cmd.json()))
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.error("Failed to offer outbound message for {}", playerId, ex);
+                    }
+                });
         return Behaviors.same();
     }
 

@@ -78,4 +78,4 @@ When adding a new message type, do **all** of the following in order:
 - The Gradle daemon is disabled in CI via `GRADLE_OPTS=-Dorg.gradle.daemon=false`.
 - `GRADLE_USER_HOME` is set to `.gradle-home/` inside the workspace so caches work with GitHub’s cache.
 - The workflow runs only when files under `server/`, `client/`, or `.github/` change (path filters on push and pull_request).
-- Server: validate wrapper → build → test; on push to default branch (or tag), package shadow JAR and upload artifact. Client: on push to default branch (or tag), export Linux/Windows/macOS and upload artifacts.
+- Server: build → test; on push to default branch (or tag), package shadow JAR and upload artifact. Client: on push to default branch (or tag), export Linux/Windows/macOS and upload artifacts.
